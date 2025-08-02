@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dhhsdiqhgdm5b"]
 
-[ext_resource type="Script" uid="uid://dt6grc2705ghw" path="res://scripts/collection.gd" id="1_4rdon"]
+[ext_resource type="Script" uid="uid://b5p4tmqu8nptx" path="res://scripts/collection.gd" id="1_4rdon"]
 
 [node name="CoinCollection" type="Node"]
 script = ExtResource("1_4rdon")
