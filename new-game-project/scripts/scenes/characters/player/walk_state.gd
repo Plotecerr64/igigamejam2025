@@ -4,37 +4,29 @@ extends NodeState
 @export var animated_sprite_2d: AnimatedSprite2D
 @export var speed: int = 50
 
+func _play_if_changed(anim_name):
+	if animated_sprite_2d.animation != anim_name:
+		animated_sprite_2d.play(anim_name)
 
-func _on_process(_delta: float) -> void:
-	pass
+func _on_physics_process(_delta):
+	var raw = GameInputEvents.movement_input()
+	if raw == Vector2.ZERO:
+		transition.emit("Idle")
+		return
 
+	# dominant‐axis face direction
+	var face := Vector2.ZERO
+	if abs(raw.x) > abs(raw.y):
+		face.x = sign(raw.x)
+	else:
+		face.y = sign(raw.y)
 
-func _on_physics_process(_delta: float) -> void:
-	var direction: Vector2 = GameInputEvents.movement_input()
-
-	if direction == Vector2.UP:
-		animated_sprite_2d.play("walk_back")
-	elif direction == Vector2.RIGHT:
-		animated_sprite_2d.play("walk_right")
-	elif direction == Vector2.DOWN:
-		animated_sprite_2d.play("walk_front")
-	elif direction == Vector2.LEFT:
-		animated_sprite_2d.play("walk_left")
-
-	if direction != Vector2.ZERO:
-		player.player_direction = direction
-
-	player.velocity = direction * speed
+	player.player_direction = face
+	player.velocity = raw * speed
 	player.move_and_slide()
 
-
-func _on_next_transitions() -> void:
-	if !GameInputEvents.is_movement_input():
-		transition.emit("Idle")
-
-
-func _on_enter() -> void:
-	pass
-
-func _on_exit() -> void:
-	animated_sprite_2d.stop()
+	match face:
+		Vector2.UP:    _play_if_changed("walk_back")
+		Vector2.DOWN:  _play_if_changed("walk_front")
+		Vector2.LEFT:  _play_if_changed("walk_left")
+		Vector2.RIGHT: _play_if_changed("walk_right")
